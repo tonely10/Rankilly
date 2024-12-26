@@ -6,6 +6,32 @@
     <title>sacar dinheiro</title>
 </head>
 <body>
+    
+    <div id="janela">
+        
+     <div id="popup">
+         <h3 style="width:100%; text-align: center; margin: 0px 0px">    Confirme o pix</h3>
+         
+       <p class="o" id="p0">O Rankilly ficará com 17% do valor solicitado que é equivalente a R$ 0,50 e já virá descontado no valor solicitado</p>
+       <p class="o" id="p1">17% de 2,50 = 0,42</p>  
+       <p class="o" id="p2">2,50 – 0,42 = 1,05</p>
+    <p style=" color: darkblue; width: 100%; text-align: ;" class="o"><ins><b>Total a ser recebido: <b><ins></p>
+       <p style=" color: darkblue; font-size: 25px; margin: 10px 10px 0px 15px;" id="total"><ins><b>1,05<b><ins></p>
+       
+       
+     </div>
+    
+    <button id="confirm">COMFIRMAR ENVIO</button>
+            
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
     <div id="barra">
       <b id="title">Sacar dinheiro</b>
       <b style="color: lightblue;"> R$ 2,25 </b>
@@ -14,9 +40,16 @@
   
   <div id="base">
    
-   <p>valor de saque:</p>
+  <!--  <p>valor de saque:</p> -->
+  <div style="width: 100%; padding-left: 12px; align-items:center; display:flex; border: 0px solid black; box-sizing: border-box; margin: 10px 10px;">
+  <img src="https://geradornv.com.br/wp-content/themes/v1.34.7/assets/images/logos/pix/logo-pix-520x520.png" style="width:24px; height:24px;">
    
-   <input type="number" name="sim" id="valor" placeholder="valor de saque...">
+  <b style="border:0px solid black; margin-left: 7px">Meio de pagamento: Pix</b>
+   
+   </div>
+   
+   
+   <input type="number" name="valor" id="valor" placeholder="valor de saque..." >
    <input type="text" name="" id="pix" placeholder="chave pix...">
    
    
@@ -44,7 +77,7 @@
         top: 0;
         margin:0px;       
         background-color: #01579B;
-        height: 50px;
+        height: 55px;
         //position:fixed;
         display: flex;
         align-items: center;
@@ -52,7 +85,7 @@
         justify-content: space-between;
         padding-right: 17px;        
         box-shadow: 0px 0px 7px rgba(0,0,0, 0.3);
-        
+        box-sizing: border-box;        
         
          }
          
@@ -65,17 +98,17 @@
    #base {
        display: flex;
        //justify-content: center;
-       padding-top: 25px;       
+       padding-top: 0px;       
        flex-direction: column;
        align-items:center;       
    }
    input {
-       width: 300px;
+       width: 350px;
        font-size: 21px; 
        display:flex;   
        margin-bottom: 15px;   
        border-radius: 4.5px;
-       border: 0.6px solid black;
+       border: 1px dashed black;
        padding: 5px;
        
                  
@@ -97,4 +130,97 @@
        margin-top: 20px; 
        
    }
+   
+   #janela {
+
+       position: fixed;
+       width:100%;
+       height:100%;
+       index-z: 5;
+       background-color: rgba(0,0,0, 0.5);
+       align-items: center ;  
+       display: none ;
+       
+       flex-direction: column;      
+       justify-content: center;
+       
+   }
+   
+   #popup {
+      background-color : white ;
+     // margin:40%;
+      border-radius :10px 10px 0px 0px;
+      width: 250px ;
+      height :300px;
+      //margin-bottom : 0px; 
+      border : 1px solid black ;
+      display: flex;
+      padding: 10px;
+      box-sizing: border-box;
+            
+      //justify-content: center;
+      flex-direction: column;
+      
+         
+      
+   }
+   #confirm{
+       border-radius : 0px 0px 10px 10px;
+       width: 250px;
+       height: 50px; 
+       border: solid 1px black ;   
+       margin-bottom: 100px ; 
+       font-size: 17px;      
+   }
+   .o {
+       margin: 5px 5px;
+       word-wrap: break-word;
+       overflow-wrap: break-word;    
+       
+   }
 </style>
+
+
+<script>
+    
+    const mostrar = document.getElementById("enviar")
+const p0 = document.getElementById("p0");
+const p1 = document.getElementById("p1");
+const p2 = document.getElementById("p2");
+const total = document.getElementById("total");
+const menu= document.getElementById("janela")
+const valorInput = document.getElementById("valor");
+
+  mostrar.addEventListener("click", function () {
+    // Alternar visibilidade do menu
+    if (window.getComputedStyle(menu).display === "none") {
+      menu.style.display = "flex";
+    } else {
+      menu.style.display = "none";
+    }
+
+   
+  const valo = parseFloat(valorInput.value);
+    
+  var percento = (valo * 0.17).toFixed(2);
+   
+    if (!isNaN(valo)) {
+    
+      
+          } else {
+      p1.textContent = "Erro: O valor não é um número válido.";
+    }
+    
+    p1.textContent = "17% de " + valo + " = " + percento;
+    p2.textContent = valo + " – " + percento + " = " + (valo - percento);      
+      
+  total.textContent = "R$ "+(valo - percento);
+    
+    
+  });
+
+  menu.addEventListener("click", function () {
+    mostrar.click();
+  });
+  
+</script>
