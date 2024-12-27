@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Pix com Mercado Pago</title>
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #qrcode {
+            margin-top: 20px;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 18px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pagamento com Pix - Mercado Pago</h1>
+    <p>Escaneie o QR Code abaixo para realizar o pagamento.</p>
+
+    <!-- Exibição do QR Code -->
+    <div id="qrcode">
+        <img id="pix-qrcode" src="" alt="QR Code do Pix" style="max-width: 300px;">
+    </div>
+
+    <div id="status"></div>
+
+    <script>
+        // Substitua pelo seu token público do Mercado Pago
+        const publicKey = "TEST-d9a11047-e463-47e6-b62a-1dc75cf9c4e7";
+
+        // Inicializa o Mercado Pago
+        const mercadopago = new MercadoPago(publicKey);
+
+        // Função para criar uma preferência de pagamento
+        async function criarPagamento() {
+            // Detalhes do pagamento
+            const body = {
+                transaction_amount: 10.00, // Valor do pagamento
+                description: "Produto Teste", // Descrição do produto
+                payment_method_id: "pix",
+                payer: {
+                    email: "cliente@email.com", // E-mail do cliente
+                    first_name: "Cliente",
+                    last_name: "Teste"
+                }
+            };
+
+            try {
+                // Faz a requisição para criar o Pix
+                const response = await fetch("https://api.mercadopago.com/v1/payments", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer TEST-1340295130948006-122619-ec84fcfd3134d6324499194009892a0c-2181594046`, // Substitua pelo seu Access Token
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Exibe o QR Code gerado
+                    document.getElementById("pix-qrcode").src = data.point_of_interaction.transaction_data.qr_code_base64;
+
+                    // Inicia a verificação de pagamento
+                    verificarPagamento(data.id);
+                } else {
+                    const error = await response.json();
+                    console.error("Erro ao criar pagamento:", error);
+                }
+            } catch (error) {
+                console.error("Erro na conexão:", error);
+            }
+        }
+
+        // Função para verificar o status do pagamento
+        async function verificarPagamento(paymentId) {
+            const interval = setInterval(async () => {
+                try {
+                    const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+                        method: "GET",
+                        headers: {
+                            "Authorization": `Bearer TEST-1340295130948006-122619-ec84fcfd3134d6324499194009892a0c-2181594046` // Substitua pelo seu Access Token
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.status === "approved") {
+                            clearInterval(interval);
+                            document.getElementById("status").innerText = "Pagamento confirmado! Produto liberado.";
+                            // Aqui você pode liberar o produto
+                        }
+                    } else {
+                        console.error("Erro ao verificar pagamento:", await response.json());
+                    }
+                } catch (error) {
+                    console.error("Erro na conexão:", error);
+                }
+            }, 5000); // Verifica a cada 5 segundos
+        }
+
+        // Chama a função para criar o pagamento assim que a página carregar
+        criarPagamento();
+    </script>
+</body>
+</html>
