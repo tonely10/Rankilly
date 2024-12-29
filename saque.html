@@ -4,24 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>sacar dinheiro</title>
+    
+   <!-- FIREBASE CONFIGURAÇÕES -->
+
+<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-firestore.js"></script>
+
+<!-- __________________________ -->
+    
+    
 </head>
 <body>
     
     <div id="janela">
         
      <div id="popup">
+         <div id="tela1" style="display:block;">
          <h3 style="width:100%; text-align: center; margin: 0px 0px">    Confirme o pix</h3>
          
-       <p class="o" id="p0">O Rankilly ficará com 17% do valor solicitado que é equivalente a R$ 0,50 e já virá descontado no valor solicitado</p>
+       <p class="o" id="p0">O Rankilly ficará com 17% do valor solicitado que já virá descontado no valor solicitado.</p>
        <p class="o" id="p1">17% de 2,50 = 0,42</p>  
        <p class="o" id="p2">2,50 – 0,42 = 1,05</p>
     <p style=" color: darkblue; width: 100%; text-align: ;" class="o"><ins><b>Total a ser recebido: <b><ins></p>
        <p style=" color: darkblue; font-size: 25px; margin: 10px 10px 0px 15px;" id="total"><ins><b>1,05<b><ins></p>
+       </div>
        
+     <div id="tela2" style="display: none;">
+         
+       <img src="https://www.kindpng.com/picc/m/721-7212637_done-icon-white-png-transparent-png.png" style="width:100px; height:100px; margin-left: 65px;" id="gif">
+         
+      <p style="text-align:center;">Seu Pix está sendo processado.</p>
+      <p>Você deverá receber o pagamento em 2 dias úteis. pedido está registrado em, menu > extratos. </p>
+         
+     </div>
        
      </div>
     
-    <button id="confirm">COMFIRMAR ENVIO</button>
+    <button id="confirm" >COMFIRMAR ENVIO</button>
             
     </div>
     
@@ -34,14 +55,14 @@
     
     <div id="barra">
       <b id="title">Sacar dinheiro</b>
-      <b style="color: lightblue;"> R$ 2,25 </b>
+      <b id="money" style="color: lightblue;"> R$ 2,25 </b>
       
     </div>
   
   <div id="base">
    
   <!--  <p>valor de saque:</p> -->
-  <div style="width: 100%; padding-left: 12px; align-items:center; display:flex; border: 0px solid black; box-sizing: border-box; margin: 10px 10px;">
+  <div style="width: 100%; padding-left: 12px; align-items:center; display:flex; border: 0px solid black; box-sizing: border-box; margin: 10px 0px; ">
   <img src="https://geradornv.com.br/wp-content/themes/v1.34.7/assets/images/logos/pix/logo-pix-520x520.png" style="width:24px; height:24px;">
    
   <b style="border:0px solid black; margin-left: 7px">Meio de pagamento: Pix</b>
@@ -50,6 +71,7 @@
    
    
    <input type="number" name="valor" id="valor" placeholder="valor de saque..." >
+   <p id="aviso" style="color: red; width:100%; margin-left:35px; display:none;" class="o">Esse valor é maior que seu saldo.</p>
    <input type="text" name="" id="pix" placeholder="chave pix...">
    
    
@@ -106,10 +128,11 @@
        width: 350px;
        font-size: 21px; 
        display:flex;   
-       margin-bottom: 15px;   
+       margin-top: 15px;   
        border-radius: 4.5px;
        border: 1px dashed black;
        padding: 5px;
+       text-transform: lowercase;
        
                  
    }
@@ -121,7 +144,7 @@
    } */
    
    #enviar {
-       width: 300px;
+       width: 350px;
        background-color: red;
        color: white;
        border-radius: 7px;
@@ -181,24 +204,73 @@
 </style>
 
 
+
 <script>
     
-    const mostrar = document.getElementById("enviar")
+var saldo = 2.25;
+var sumir = true;
+var feito = false;
+
+const mostrar = document.getElementById("enviar")
 const p0 = document.getElementById("p0");
 const p1 = document.getElementById("p1");
 const p2 = document.getElementById("p2");
 const total = document.getElementById("total");
 const menu= document.getElementById("janela")
 const valorInput = document.getElementById("valor");
+const aviso= document.getElementById("aviso");
+const confirme = document.getElementById("confirm");
+const gif = document.getElementById("gif");
+const tela1 = document.getElementById("tela1");
+const tela2 = document.getElementById("tela2");
+
+
+
+ //🔥 FIREBASE CONFIGURAÇÕES 🔥🔥🔥🔥🔥
+  
+  
+const firebaseConfig = {
+  apiKey: "AIzaSyCngm8nP3OeRhI6R9cgss9cISXX2qYqrRE",
+  authDomain: "rankilly.firebaseapp.com",
+  databaseURL: "https://rankilly-default-rtdb.firebaseio.com",
+  projectId: "rankilly",
+  storageBucket: "rankilly.firebasestorage.app",
+  messagingSenderId: "77606377635",
+  appId: "1:77606377635:web:2f273b19f72a1027740716"
+};
+
+  
+// Initialize Firebase
+  
+firebase.initializeApp(firebaseConfig);
+console.log(firebase);
+  const db = firebase.database();
+  
+  
+
+// OBTER LISTA DE USERS DO FIRE
+  
+  db.ref("users").once("value", snapshot => {
+        const jsonText = snapshot.val() || "{}"; // Pega o JSON em texto ou usa um objeto vazio
+        const users = JSON.parse(jsonText); // Converte para objeto
+
+ //saldo = users.saldo;
+ saldo = localStorage.getItem("saldo"); 
+ 
+ money.textContent = "R$" + saldo;
+
+});
+
 
   mostrar.addEventListener("click", function () {
     // Alternar visibilidade do menu
+    if(!valorInput.value == ""){
     if (window.getComputedStyle(menu).display === "none") {
       menu.style.display = "flex";
     } else {
       menu.style.display = "none";
     }
-
+}
    
   const valo = parseFloat(valorInput.value);
     
@@ -212,15 +284,71 @@ const valorInput = document.getElementById("valor");
     }
     
     p1.textContent = "17% de " + valo + " = " + percento;
-    p2.textContent = valo + " – " + percento + " = " + (valo - percento);      
+    p2.textContent = valo + " – " + percento + " = " + (valo - percento).toFixed(2);      
       
-  total.textContent = "R$ "+(valo - percento);
+  total.textContent = "R$ "+ (valo - percento).toFixed(2);
     
     
   });
 
   menu.addEventListener("click", function () {
-    mostrar.click();
+    //mostrar.click();
+    if(!feito){
+    if (sumir){
+        janela.style.display = "none";
+        
+    }
+    }else{
+        if (sumir){
+        window.location.href = "index.html";
+        }
+    }
+    
   });
+  
+  // confirmar butao
+  
+  confirme.addEventListener("click", function () {
+  if (!feito){
+  sumir = false;
+  //janela.style.display = "block";
+  tela1.style.display = "none";
+  tela2.style.display = "block";
+  confirme.textContent = "OK";
+  feito = true;
+  valorInput.value = "";
+  
+  
+  setTimeout(() => {
+  
+  sumir = true;
+}, 500);
+  }else{
+      
+     window.location.href = "index.html";
+      
+  }
+    });
+  
+  
+  
+  
+  //  imput detecter
+  
+  valorInput.addEventListener("input", function () {
+    const valor = parseFloat(valorInput.value); // Obter valor do input como número
+
+    if (!isNaN(valor) && valor > saldo) {
+      aviso.style.display = "block"; // Mostrar o aviso
+    } else {
+      aviso.style.display = "none"; // Esconder o aviso
+    }
+  });
+  
+  
+  
+  
+  
+  
   
 </script>
