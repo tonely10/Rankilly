@@ -3,7 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RANKILLY</title>
+    <title>Page title</title
+    
+    <!-- FIREBASE CONFIGURAÇÕES -->
+
+
+ <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-firestore.js"></script>
+
+
+
+
+<!-- __________________________ -->    
+    
 </head>
 <body>
     
@@ -39,14 +53,14 @@
     <div id="userlay" class="j">
     
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzR-TD26kBt6MQqzX-EVcoRxN5mh_f4VRDn1XioCyRoQdkAnaM8ZWfg7Rw&s=10" style="width:30px; height:30px;border-radius: 50%;">
-    <button style=" margin-bottom: 0px;  font-size:15px; border: none; background-color: transparent;"><b>ERICK07</b></button>
+    <button id="nome" style=" margin-bottom: 0px;  font-size:15px; border: none; background-color: transparent;"><b>ERICK07</b></button>
     
   </div>
         
      
      
-     <button class="list">depositar</button>
-     <button class="list">extratos</button>
+     <button id="depo" class="list">depositar</button>
+     <button id="extratos" class="list">extratos</button>
      <button class="list">minha conta</button>
         
     </div>
@@ -83,7 +97,7 @@
   </div>
          
          
-        <button style="height: 2000px;">kkk</button>
+        <button style="height: 2000px;" onclick="checkLogin">kkk</button>
         <button id="fullscreenBtn">Ativar Tela Cheia</button>
     </div>
     
@@ -162,7 +176,7 @@
        right: 15px; 
        display: none;
        margin-top:65px;
-       width: 150px;
+       width: 170px;
        height: 300px;
        padding: 0px; 
        border-radius: 7px;            
@@ -260,12 +274,97 @@
     </style>
     
     <script>
+        
+         //🔥 FIREBASE CONFIGURAÇÕES 🔥🔥🔥🔥🔥
+  
+  
+const firebaseConfig = {
+  apiKey: "AIzaSyCngm8nP3OeRhI6R9cgss9cISXX2qYqrRE",
+  authDomain: "rankilly.firebaseapp.com",
+  databaseURL: "https://rankilly-default-rtdb.firebaseio.com",
+  projectId: "rankilly",
+  storageBucket: "rankilly.firebasestorage.app",
+  messagingSenderId: "77606377635",
+  appId: "1:77606377635:web:2f273b19f72a1027740716"
+};
+
+  
+// Initialize Firebase
+  
+firebase.initializeApp(firebaseConfig);
+console.log(firebase);
+  
+        
+        
+        
+        
+        
         var sim = 0;
-        const fullscreenBtn = document.getElementById("fullscreenBtn");
-        const menu = document.getElementById("menu");
+const fullscreenBtn = document.getElementById("fullscreenBtn");
+const menu = document.getElementById("menu");
+const money = document.getElementById("money");
         
-        const mostrar = document.getElementById("mostrar");
+const mostrar = document.getElementById("mostrar");
+const nome = document.getElementById("nome");
+let users;
         
+        
+    // Função para Verificar se o Usuário já Está Logado
+      function checkLogin() {
+      const userInfo = localStorage.getItem("loggedUser");
+      if (userInfo) {
+        const user = JSON.parse(userInfo);
+    nome.textContent = user.id;
+    alert(user.id);
+        
+      }
+      
+      
+    }
+        
+        
+     
+        
+        
+ const nom = localStorage.getItem("nome");
+ nome.textContent = nom;
+ //const saldo = localStorage.getItem("saldo");       
+ 
+// money.textContent = "R$ " + saldo + " reais";
+   var saldo;
+ 
+ 
+ const db = firebase.database();
+  
+  
+
+// OBTER LISTA DE USERS DO FIRE
+  
+  db.ref("users").once("value", snapshot => {
+        const jsonText = snapshot.val() || "{}"; // Pega o JSON em texto ou usa um objeto vazio
+        const users = JSON.parse(jsonText); // Converte para objeto
+
+        const status = document.getElementById("status");
+        if (users[nom]) {
+          
+        saldo = users[nom].saldo;
+        money.textContent = "R$ " + saldo + " reais";
+        alert(saldo);
+          
+        } else {
+          
+        }
+      });
+ 
+ 
+  document.getElementById("depo").addEventListener("click", function() {
+   
+   window.name = nom;
+   window.location.href = "https://rankilly.pythonanywhere.com";
+        
+        
+        
+        });
         
         
         mostrar.addEventListener("click", function() {
@@ -335,7 +434,7 @@
             //alert("O navegador não suporta notificações.");
         }
         
-        
+        document.addEventListener("DOMContentLoaded", checkLogin);
     </script>
 </body>
 </html>
