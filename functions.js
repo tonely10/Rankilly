@@ -1,6 +1,8 @@
 function getsaldo(id) {
     return db.ref("users").once("value").then(snapshot => {
-        const users = snapshot.val() || {}; // Obtem o JSON como objeto
+        const user = snapshot.val() || {}; 
+        const users = JSON.parse(user); /
+        // Obtem o JSON como objeto
         if (users[id]) {
             return users[id].saldo; // Retorna o saldo se existir
         }
