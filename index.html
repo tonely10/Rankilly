@@ -83,7 +83,7 @@
      
   </div>
   
-  <button id="sacar" onclick="window.location.href='saque.html'"> <b>SACAR</b> </button>
+  <button id="sacar"> <b>SACAR</b> </button>
   
  
         </div>
@@ -345,7 +345,9 @@
    
     </style>
     
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue, child } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
         
          //🔥 FIREBASE CONFIGURAÇÕES 🔥🔥🔥🔥🔥
   
@@ -361,11 +363,10 @@ const firebaseConfig = {
 };
 
   
-// Initialize Firebase
   
-firebase.initializeApp(firebaseConfig);
-console.log(firebase);
-  
+// Inicializar o Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
         
         
         
@@ -398,20 +399,41 @@ let users;
      
         
         
- const nom = localStorage.getItem("nome");
- nome.textContent = nom;
+ //const nom = localStorage.getItem("nome");
+ 
  //const saldo = localStorage.getItem("saldo");       
  
 // money.textContent = "R$ " + saldo + " reais";
    var saldo;
  
- 
- const db = firebase.database();
   
+  const userData = JSON.parse(localStorage.getItem('userData'));
+  
+if (userData) {
+
+ var nom = userData.username;
+ //alert("");
+ 
+ }
+ 
+ nome.textContent = nom;
+ 
+ const valorRef = ref(db, `users/${nom}/valor`);
+    onValue(valorRef, snapshot => {
+    
+   saldo = snapshot.exists() ? snapshot.val() : 0;
+   money.textContent = "R$ " + saldo + " reais";
+       
+    });
+
+ 
+
   
 
 // OBTER LISTA DE USERS DO FIRE
   
+ /*
+ 
   db.ref("users").once("value", snapshot => {
         const jsonText = snapshot.val() || "{}"; // Pega o JSON em texto ou usa um objeto vazio
         const users = JSON.parse(jsonText); // Converte para objeto
@@ -428,11 +450,39 @@ let users;
         }
       });
  
+ */
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+ 
+ 
+ 
+ 
+ 
+ 
  
   document.getElementById("depo").addEventListener("click", function() {
    
    window.name = nom;
    window.location.href = "https://rankilly.pythonanywhere.com";
+        
+        
+        
+        });
+        
+        
+        
+        
+  document.getElementById("sacar").addEventListener("click", function() {
+   
+   window.name = nom;
+   window.location.href = "saque.html";
         
         
         
