@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Page title</title>
+</head>
+<body>
+    
+    
+     <div id="barra">
+      <b id="title">Histórico de saques</b>
+      
+      
+    </div>
+  
+<ul id="listaSaques"></ul>
+
+
+
+
+</body>
+
+
+
+<style>
+    
+    
+    body {
+        margin: 0;
+    }
+    
+    
+    #barra {
+        top: 0;
+        margin:0px;       
+        background-color: #01579B;
+        height: 55px;
+        //position:fixed;
+        display: flex;
+        align-items: center;
+        padding-left: 17px;
+        justify-content: space-between;
+        padding-right: 17px;        
+        box-shadow: 0px 0px 7px rgba(0,0,0, 0.3);
+        box-sizing: border-box;        
+        
+         }
+         
+    #title {
+        
+       font-size: 21px;
+       color: white;        
+        
+    }
+   #base {
+       display: flex;
+       //justify-content: center;
+       padding-top: 0px;       
+       flex-direction: column;
+       align-items:center;       
+   }
+    
+   ul li {
+        
+border-bottom: 1px solid black;
+padding: 0px 10px 10px 10px;
+margin-right: 30px;
+
+
+       
+   }
+    
+</style>
+
+
+
+ <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue, child } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
+        
+        
+        
+   const firebaseConfig = {
+  apiKey: "AIzaSyCngm8nP3OeRhI6R9cgss9cISXX2qYqrRE",
+  authDomain: "rankilly.firebaseapp.com",
+  databaseURL: "https://rankilly-default-rtdb.firebaseio.com",
+  projectId: "rankilly",
+  storageBucket: "rankilly.firebasestorage.app",
+  messagingSenderId: "77606377635",
+  appId: "1:77606377635:web:2f273b19f72a1027740716"
+};
+    
+    
+   // Inicializar o Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+ 
+    
+    
+  const userData = JSON.parse(localStorage.getItem('userData'));
+if (userData) {
+    carregarSaques(userData.username);
+}
+    
+  /*  
+ async function carregarSaques(username) {
+    const database = getDatabase();
+    const saquesRef = ref(database, `users/${username}/saques`);
+
+    try {
+        const snapshot = await get(saquesRef);
+        if (snapshot.exists()) {
+            const saques = snapshot.val();
+            const listaSaques = Object.keys(saques).map(key => {
+                return { id: key, ...saques[key] };
+            });
+
+            console.log(listaSaques);
+            atualizarInterfaceSaques(listaSaques);
+        } else {
+            alert('Nenhum saque encontrado.');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Erro ao carregar saques: ' + error.message);
+    }
+}
+
+*/
+    
+    
+    
+    async function carregarSaques(username) {
+    const database = getDatabase();
+    const saquesRef = ref(database, `users/${username}/saques`);
+
+    try {
+        const snapshot = await get(saquesRef);
+        if (snapshot.exists()) {
+            const saques = snapshot.val();
+
+            // Converte em array e ordena do mais recente para o mais antigo
+            const listaSaques = Object.keys(saques)
+                .map(key => ({ id: key, ...saques[key] }))
+                .sort((a, b) => new Date(b.data) - new Date(a.data));
+
+            atualizarInterfaceSaques(listaSaques);
+        } else {
+            alert('Nenhum saque encontrado.');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Erro ao carregar saques: ' + error.message);
+    }
+}
+    
+    
+ function atualizarInterfaceSaques(saques) {
+    const listaElement = document.getElementById('listaSaques');
+    listaElement.innerHTML = ''; // Limpa a lista
+
+    saques.forEach(saque => {
+        const item = document.createElement('li');
+        item.textContent = `${saque.texto} - ${new Date(saque.data).toLocaleString()}`;
+        listaElement.appendChild(item);
+    });
+}
+    
+</script>
+
+</html>
